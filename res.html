@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Detector de Resolución DOOH</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: flex;
+      align-items: top;
+      justify-content: center;
+      overflow: hidden;
+      font-family: monospace;
+      color: #00ff00;
+    }
+
+    .info {
+      text-align: center;
+      font-size: 225px;
+      line-height: 1.1;
+    }
+
+    .extra {
+      font-size: 60px;
+      margin-top: 40px;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="info" id="resolution">
+    Detectando...
+  </div>
+
+  <script>
+    function mostrarResolucion() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      const extraInfo = `
+        <div class="extra">
+          screen: ${screen.width} x ${screen.height}<br>
+          devicePixelRatio: ${window.devicePixelRatio}
+        </div>
+      `;
+
+      document.getElementById("resolution").innerHTML =
+        width + " x " + height + extraInfo;
+    }
+
+    window.addEventListener("load", mostrarResolucion);
+    window.addEventListener("resize", mostrarResolucion);
+  </script>
+
+</body>
+</html>

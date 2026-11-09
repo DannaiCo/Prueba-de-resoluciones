@@ -2,96 +2,98 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DOOH - Prueba de cobertura y orientacion</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>DOOH - Prueba automatica 1793 x 2051</title>
 <style>
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080a0e;color:#fff;font-family:Arial,Helvetica,sans-serif}
-/* Todos los patrones ocupan el viewport completo; no hay resolucion fija ni escalado global. */
-#test-pattern{position:fixed;inset:0;width:100%;height:100%;overflow:hidden;z-index:0;
- background:linear-gradient(90deg,rgba(235,50,69,.26) 0 50%,rgba(45,149,255,.26) 50% 100%) top/100% 50% no-repeat,
- linear-gradient(90deg,rgba(255,206,34,.26) 0 50%,rgba(172,86,255,.26) 50% 100%) bottom/100% 50% no-repeat,#080a0e}
-#grid{position:fixed;inset:0;pointer-events:none;z-index:1;background-image:linear-gradient(to right,rgba(255,255,255,.22) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.22) 1px,transparent 1px);background-size:10% 10%}
-#axes{position:fixed;inset:0;pointer-events:none;z-index:1}
-#axes:before,#axes:after{content:"";position:absolute;background:#fff;box-shadow:0 0 5px #000}
-#axes:before{left:calc(50% - 1px);top:0;width:2px;height:100%}
-#axes:after{top:calc(50% - 1px);left:0;width:100%;height:2px}
-.frame{position:fixed;inset:0;border:clamp(5px,0.45vmin,18px) solid #fff;z-index:2;pointer-events:none}
-.edge{position:fixed;z-index:4;width:18%;height:clamp(8px,1.1vmin,34px)}
-.top{top:0}.bottom{bottom:0}.left{left:0}.right{right:0}
-.edge.top.left,.edge.bottom.left{background:#ff4057}.edge.top.right,.edge.bottom.right{background:#249bff}
-.corner{position:fixed;z-index:5;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.15em;
- width:clamp(80px,17vmin,260px);min-height:clamp(50px,9vmin,135px);border:clamp(2px,.35vmin,8px) solid white;
- font-size:clamp(12px,1.9vmin,33px);font-weight:900;text-align:center;line-height:1.05;color:#080a0e;box-shadow:0 0 0 3px rgba(0,0,0,.55)}
-.corner b{font-size:1.55em}.tl{top:1.4%;left:1.1%;background:#ff4057}.tr{top:1.4%;right:1.1%;background:#249bff}.bl{bottom:1.4%;left:1.1%;background:#ffd21e}.br{bottom:1.4%;right:1.1%;background:#ab62ff}
-.arrow-box{position:fixed;z-index:5;top:1.3%;left:50%;transform:translateX(-50%);text-align:center;color:#fff;
- font-weight:900;font-size:clamp(13px,1.8vmin,36px);text-shadow:0 2px 6px #000;white-space:nowrap}
-.arrow-box .arrow{font-size:clamp(42px,6.5vmin,125px);color:#ff3c53;line-height:.8}
-.side-mark{position:fixed;top:50%;z-index:3;transform:translateY(-50%);font-size:clamp(10px,1.6vmin,28px);font-weight:900;letter-spacing:.06em;background:#07090dcc;padding:.5em}
-.side-mark.l{left:1%}.side-mark.r{right:1%}
-.bottom-mark{position:fixed;bottom:1.2%;left:50%;transform:translateX(-50%);z-index:5;font-size:clamp(11px,1.4vmin,26px);font-weight:900;background:#080a0e;padding:.25em .65em;white-space:nowrap}
-.main{position:fixed;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:clamp(58px,12vmin,210px) clamp(75px,19vmin,300px)}
-.panel{pointer-events:auto;width:min(100%,1380px);max-height:100%;overflow:auto;background:rgba(5,9,15,.94);border:2px solid white;
- padding:clamp(10px,2vmin,32px);text-align:center;box-shadow:0 0 16px #000b}
-h1{font-size:clamp(14px,2.2vmin,40px);margin:0 0 .3em;letter-spacing:.04em}
-.res{font-size:clamp(24px,5.7vmin,120px);font-weight:900;color:#41ffbe;line-height:1.05;white-space:nowrap}
-.orient{font-size:clamp(12px,1.7vmin,34px);font-weight:800;color:#ffdb6e;margin:.3em 0 .7em}
-.data{display:grid;grid-template-columns:1fr 1fr;gap:clamp(5px,.8vmin,15px);text-align:left}
-.item{background:#14202d;border:1px solid #5c7388;padding:clamp(7px,1vmin,19px);min-width:0}
-.item.full{grid-column:1 / -1}.label{color:#d7e4ec;font-weight:800;font-size:clamp(11px,1.4vmin,25px);line-height:1.1}
-.value{color:#41ffbe;font-weight:800;font-size:clamp(12px,1.75vmin,34px);overflow-wrap:anywhere;margin-top:.22em;line-height:1.17}
-.value.sm{font-size:clamp(11px,1.35vmin,27px)}
-.note{color:#ffcb8b;font-size:clamp(11px,1.3vmin,25px);line-height:1.25;margin-top:.8em}
-@media (orientation:portrait){.main{padding:clamp(85px,12vh,290px) 13vw clamp(75px,11vh,260px)}.data{grid-template-columns:1fr}.item.full{grid-column:auto}.res{font-size:clamp(24px,5vw,100px)}.panel{padding:2vmin}.corner{width:18vw;min-height:8vh}.arrow-box{top:2%}}
-@media (max-height:650px){.main{padding:60px 15vw}.panel{padding:8px}.item{padding:5px}.orient{margin:2px 0 5px}.note{margin-top:4px}.arrow-box .arrow{font-size:35px}}
+  * {box-sizing:border-box}
+  html,body {width:100%;height:100%;margin:0;overflow:hidden;background:#090d18;font-family:Arial,Helvetica,sans-serif;color:#fff}
+  #stage {position:absolute;left:0;top:0;width:1793px;height:2051px;overflow:hidden;transform-origin:0 0;background:#111b2c}
+  .quad {position:absolute;width:50%;height:50%;opacity:.94}
+  .tl {left:0;top:0;background:#c5193b} .tr {right:0;top:0;background:#1455df}
+  .bl {left:0;bottom:0;background:#ed9a12} .br {right:0;bottom:0;background:#8038b8}
+  .frame {position:absolute;inset:0;border:16px solid #fff;pointer-events:none}
+  .mid-v,.mid-h {position:absolute;background:#fff8;pointer-events:none}
+  .mid-v {left:50%;top:0;width:4px;height:100%} .mid-h {top:50%;left:0;height:4px;width:100%}
+  .top {position:absolute;top:45px;left:0;width:100%;font-size:55px;line-height:1.15;text-align:center;font-weight:900;text-shadow:0 3px 8px #000}
+  .arrow {font-size:90px;line-height:1}
+  .corner {position:absolute;font-size:33px;font-weight:bold;padding:24px;text-shadow:0 3px 5px #000}
+  .corner.tl-label {top:0;left:0}.corner.tr-label {top:0;right:0}
+  .corner.bl-label {bottom:0;left:0}.corner.br-label {bottom:0;right:0}
+  .diagnostic {position:absolute;top:300px;left:7%;width:86%;text-align:center;background:#07111de8;border:7px solid #fff;border-radius:18px;padding:32px 22px;font-weight:bold}
+  .diagnostic h1 {font-size:56px;line-height:1.05;margin:0 0 19px}
+  .measure {font-size:82px;color:#4cffd3;line-height:1.08}
+  .line {font-size:36px;margin-top:15px}
+  .note {font-size:31px;color:#ffed8a;margin-top:18px}
+  .figures {position:absolute;top:1100px;left:0;width:100%;display:flex;align-items:center;justify-content:center;gap:110px;flex-direction:row}
+  .circle {width:350px;height:350px;border:15px solid white;border-radius:50%;background:#131b2aab;display:flex;align-items:center;justify-content:center;font-size:31px;text-align:center;font-weight:bold}
+  .square {width:350px;height:350px;border:15px solid white;background:#131b2aab;display:flex;align-items:center;justify-content:center;font-size:31px;text-align:center;font-weight:bold}
+  .footer {position:absolute;bottom:150px;left:6%;width:88%;text-align:center;font-size:37px;line-height:1.2;font-weight:bold;background:#091320c9;padding:22px}
+  .cycle {position:absolute;bottom:20px;left:10%;width:80%;text-align:center;background:#070f1ce6;border:3px solid white;padding:12px;font-size:30px;font-weight:900}
+  .cycle small {font-size:24px;display:block;color:#ffed8a;margin-top:5px}
 </style>
 </head>
 <body>
-<div id="test-pattern" aria-hidden="true"></div><div id="grid" aria-hidden="true"></div><div id="axes" aria-hidden="true"></div><div class="frame" aria-hidden="true"></div>
-<div class="edge top left"></div><div class="edge top right"></div>
-<div class="corner tl"><b>1</b>SUPERIOR<br>IZQUIERDA</div>
-<div class="corner tr"><b>2</b>SUPERIOR<br>DERECHA</div>
-<div class="corner bl"><b>3</b>INFERIOR<br>IZQUIERDA</div>
-<div class="corner br"><b>4</b>INFERIOR<br>DERECHA</div>
-<div class="arrow-box"><div class="arrow">&#8593;</div>ARRIBA DEL HTML</div>
-<div class="side-mark l">BORDE IZQUIERDO</div><div class="side-mark r">BORDE DERECHO</div>
-<div class="bottom-mark">ABAJO DEL HTML</div>
-<main class="main"><section class="panel">
-<h1>DOOH - PRUEBA DE COBERTURA Y ORIENTACION</h1>
-<div class="res" id="resolution">-- x --</div>
-<div class="orient" id="orientation">ORIENTACION HTML: --</div>
-<div class="data">
-<div class="item"><div class="label">SCREEN REPORTADO</div><div class="value" id="screen">--</div></div>
-<div class="item"><div class="label">SCREEN.ORIENTATION / ANGULO</div><div class="value sm" id="angle">--</div></div>
-<div class="item"><div class="label">DEVICE PIXEL RATIO</div><div class="value" id="dpr">--</div></div>
-<div class="item"><div class="label">ROTACION CSS EN HTML / BODY</div><div class="value sm" id="css">--</div></div>
-<div class="item full"><div class="label">VIEWPORT Y ZOOM (CSS PX)</div><div class="value sm" id="view">--</div></div>
+<div id="stage">
+  <div class="quad tl"></div><div class="quad tr"></div><div class="quad bl"></div><div class="quad br"></div>
+  <div class="mid-v"></div><div class="mid-h"></div>
+  <div class="top"><div class="arrow">&#8593;</div>ARRIBA DEL HTML</div>
+  <div class="corner tl-label">SUP. IZQ.</div><div class="corner tr-label">SUP. DER.</div>
+  <div class="corner bl-label">INF. IZQ.</div><div class="corner br-label">INF. DER.</div>
+  <section class="diagnostic">
+    <h1>LIENZO DE CONTENIDO</h1>
+    <div class="measure">1793 x 2051</div>
+    <div class="line">Viewport del navegador: <span id="viewport">--</span></div>
+    <div class="line">Screen reportado: <span id="screen">--</span></div>
+    <div class="line">Escala X / Y: <span id="scales">--</span></div>
+    <div class="line">Modo: <span id="modeLabel">--</span></div>
+    <div class="note">Resolucion de diseno NO es resolucion fisica detectada</div>
+  </section>
+  <div class="figures"><div class="circle">CIRCULO<br>350 x 350</div><div class="square">CUADRADO<br>350 x 350</div></div>
+  <div class="footer">Si el circulo se ve ovalado o el cuadrado rectangular, existe deformacion en algun punto de la cadena de visualizacion.</div>
+  <div class="cycle">PRUEBA AUTOMATICA <span id="cycleStep">1 / 5</span><small>Siguiente modo en <span id="secondsRemaining">5</span> s</small></div>
+  <div class="frame"></div>
 </div>
-<div class="note">COMPROBACION VISUAL: el marco blanco debe llegar a los cuatro bordes fisicos. Los cuadros 1, 2, 3 y 4 deben estar en sus esquinas respectivas. Si no se ven todos, puede existir recorte o ajuste de imagen. Un giro externo al navegador NO se detecta directamente con JavaScript.</div>
-</section></main>
 <script>
 (function(){
- 'use strict';
- function el(id){return document.getElementById(id)}
- function n(v){return typeof v==='number'&&isFinite(v)?String(Math.round(v*100)/100):'N/D'}
- function dims(w,h){return n(w)+' x '+n(h)}
- function orient(w,h){return w>h?'HORIZONTAL':w<h?'VERTICAL':'CUADRADA'}
- function cssTransform(node){try{var cs=getComputedStyle(node);return cs.transform&&cs.transform!=='none'?cs.transform:'Ninguna'}catch(e){return 'N/D'}}
- function update(){
-   var w=window.innerWidth,h=window.innerHeight,sw=screen.width,sh=screen.height;
-   var o=screen.orientation,vo=window.visualViewport;
-   el('resolution').textContent=dims(w,h);
-   el('orientation').textContent='ORIENTACION HTML: '+orient(w,h);
-   el('screen').textContent=dims(sw,sh)+' ('+orient(sw,sh)+')';
-   el('angle').textContent=o&&o.type?o.type+' / '+(typeof o.angle==='number'?o.angle+' grados':'N/D'):(typeof window.orientation==='number'?'API antigua: '+window.orientation+' grados':'No disponible');
-   el('dpr').textContent=n(window.devicePixelRatio);
-   el('css').textContent='HTML: '+cssTransform(document.documentElement)+' | BODY: '+cssTransform(document.body);
-   el('view').textContent='inner: '+dims(w,h)+' | visual: '+(vo?dims(vo.width,vo.height)+' / escala '+n(vo.scale):'N/D')+' | outer: '+dims(window.outerWidth,window.outerHeight);
- }
- window.addEventListener('resize',update);window.addEventListener('orientationchange',update);
- if(screen.orientation&&screen.orientation.addEventListener)screen.orientation.addEventListener('change',update);
- if(window.visualViewport)window.visualViewport.addEventListener('resize',update);
- update();setInterval(update,3000);
+  'use strict';
+  var W=1793, H=2051, stage=document.getElementById('stage');
+  var labels={stretch:'LLENAR (deforma si cambia proporcion)', contain:'PROPORCIONAL (conserva proporcion)',cover:'RECORTAR (conserva proporcion)',rotate90:'ROTACION +90 (proporcional)',rotate270:'ROTACION -90 (proporcional)'};
+  var modes=['stretch','contain','cover','rotate90','rotate270'];
+  var DURATION_SECONDS=5; // Cambiar aqui la duracion de cada modo
+  var start=Date.now(), mode='stretch', currentIndex=-1;
+  function render(){
+    var vw=window.innerWidth, vh=window.innerHeight;
+    var sx=vw/W,sy=vh/H, transform='';
+    if(mode==='stretch') transform='translate(0px,0px) scale('+sx+','+sy+')';
+    else if(mode==='contain'||mode==='cover'){
+      var s=(mode==='contain'?Math.min(sx,sy):Math.max(sx,sy));
+      transform='translate('+((vw-W*s)/2)+'px,'+((vh-H*s)/2)+'px) scale('+s+')';
+      sx=s;sy=s;
+    } else {
+      var s2=Math.min(vw/H,vh/W);
+      var tx=(vw-H*s2)/2,ty=(vh-W*s2)/2;
+      if(mode==='rotate90') transform='translate('+(tx+H*s2)+'px,'+ty+'px) rotate(90deg) scale('+s2+')';
+      else transform='translate('+tx+'px,'+(ty+W*s2)+'px) rotate(-90deg) scale('+s2+')';
+      sx=s2;sy=s2;
+    }
+    stage.style.transform=transform;
+    document.getElementById('viewport').textContent=vw+' x '+vh;
+    document.getElementById('screen').textContent=screen.width+' x '+screen.height;
+    document.getElementById('scales').textContent=sx.toFixed(3)+' / '+sy.toFixed(3);
+    document.getElementById('modeLabel').textContent=labels[mode];
+    document.getElementById('cycleStep').textContent=(currentIndex+1)+' / '+modes.length;
+  }
+  function tick(){
+    var elapsed=Math.floor((Date.now()-start)/1000);
+    var index=Math.floor(elapsed/DURATION_SECONDS)%modes.length;
+    var remaining=DURATION_SECONDS-(elapsed%DURATION_SECONDS);
+    if(index!==currentIndex){currentIndex=index;mode=modes[index];render();}
+    document.getElementById('secondsRemaining').textContent=remaining;
+  }
+  window.addEventListener('resize',render);
+  window.addEventListener('orientationchange',render);
+  tick();
+  setInterval(tick,250);
 })();
 </script>
 </body>

@@ -1,89 +1,112 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Diagnostico de Resolucion DOOH</title>
-  <style>
-    * { box-sizing: border-box; }
-    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
-    body { background: #050505; color: #fff; font-family: Consolas, 'Courier New', monospace; }
-    .panel { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(8px, 1.5vmin, 32px); padding: 5vmin; text-align: center; }
-    .label { font-size: clamp(20px, 2.4vmin, 48px); color: #a9a9a9; text-transform: uppercase; letter-spacing: .08em; }
-    .main { font-weight: bold; color: #00ff63; font-size: clamp(30px, 8vmin, 170px); line-height: 1.05; }
-    .grid { width: 100%; max-width: 1600px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(7px, 1.4vmin, 22px); }
-    .cell { padding: clamp(10px, 1.5vmin, 24px); background: #171717; border: 1px solid #404040; border-radius: 12px; min-width: 0; overflow-wrap: anywhere; }
-    .value { color: #00ff05; margin-top: .35em; font-size: clamp(15px, 2.8vmin, 52px); font-weight: bold;  }
-    .message { color: #ffdc6e; font-size: clamp(13px, 2.1vmin, 42px); max-width: 1600px; line-height: 1.3; }
-    .arrow { position: absolute; top: 1.4vmin; left: 50%; transform: translateX(-50%); color: #ff5656; font-size: clamp(14px, 2.2vmin, 46px); font-weight: bold; white-space: nowrap; }
-    .corner { position: absolute; font-size: clamp(12px, 1.65vmin, 35px); color: #69b5ff; font-weight: bold; }
-    .tl { top: 1.2vmin; left: 1.2vmin; } .tr { top: 1.2vmin; right: 1.2vmin; }
-    .bl { bottom: 1.2vmin; left: 1.2vmin; } .br { bottom: 1.2vmin; right: 1.2vmin; }
-    @media (max-aspect-ratio: 3/4) { .grid { grid-template-columns: 1fr; } .panel { gap: 1.1vmin; } .cell { padding: 1.2vmin; } }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diagnostico DOOH | Resolucion y orientacion</title>
+<style>
+  :root { color-scheme: dark; --green: #38ffb5; --white:#f6f7fb; --muted:#bcc5ce; --orange:#ffb44b; }
+  * { box-sizing:border-box; }
+  html, body { width:100%; height:100%; margin:0; overflow:hidden; background:#080d12; color:var(--white); font-family:Arial,Helvetica,sans-serif; }
+  #grid { position:fixed; inset:0; pointer-events:none; background-image: linear-gradient(to right,rgba(255,255,255,.09) 1px,transparent 1px), linear-gradient(to bottom,rgba(255,255,255,.09) 1px,transparent 1px); background-size:10% 10%; }
+  #axes { position:fixed; inset:0; pointer-events:none; }
+  #axes::before,#axes::after { content:""; position:absolute; background:rgba(255,255,255,.28); }
+  #axes::before { left:50%; top:0; height:100%; width:2px; }
+  #axes::after { top:50%; left:0; width:100%; height:2px; }
+  .edge { position:fixed; z-index:4; padding:.34em .55em; font-size:clamp(12px,1.55vmin,32px); font-weight:900; letter-spacing:.03em; border:2px solid currentColor; background:#050709; }
+  .tl {top:1.5%;left:1%;color:#ff5568} .tr {top:1.5%;right:1%;color:#49b8ff} .bl {bottom:1.5%;left:1%;color:#ffe257} .br {bottom:1.5%;right:1%;color:#b78aff}
+  .top-arrow {position:fixed; top:1%; left:50%; transform:translateX(-50%); z-index:3; color:#ff5568; text-align:center; font-size:clamp(12px,1.6vmin,34px); font-weight:900; white-space:nowrap; text-shadow:0 2px 5px black; }
+  .top-arrow .arrow {font-size:clamp(28px,5.3vmin,100px);line-height:1;}
+  .layout {position:relative; z-index:2; height:100%; width:100%; display:flex; align-items:center; justify-content:center; padding: min(10vh,120px) 7vw min(9vh,110px); }
+  .panel {width:min(91%,1700px); max-height:88%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:clamp(7px,1.1vmin,25px); padding:clamp(12px,2vmin,38px); border:3px solid rgba(255,255,255,.4); border-radius:12px; background:rgba(2,7,11,.9); overflow:hidden; }
+  .eyebrow {font-size:clamp(13px,1.5vmin,33px); font-weight:800; color:var(--white);letter-spacing:.13em;}
+  .hero {color:var(--green);font-size:clamp(28px,5.8vmin,155px); line-height:1; font-weight:900; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .hero-sub {color:var(--orange);font-size:clamp(13px,1.75vmin,36px);font-weight:800;}
+  .metrics {width:100%; display:grid; grid-template-columns:1fr 1fr; gap:clamp(8px,1.2vmin,25px); text-align:left; }
+  .metric {border:1px solid #59636d; background:#111921; border-radius:8px; padding:clamp(9px,1.4vmin,28px); min-width:0;}
+  .metric.full {grid-column:1/-1;}
+  .metric .name {font-size:clamp(12px,1.4vmin,31px);color:#c5d0db; font-weight:800; margin-bottom:.25em; letter-spacing:.025em;}
+  .metric .value {font-size:clamp(13px,2vmin,46px);font-weight:800;color:var(--green);overflow-wrap:anywhere;line-height:1.18;}
+  .metric .value.small {font-size:clamp(12px,1.4vmin,31px);}
+  .hint {font-size:clamp(11px,1.2vmin,25px);color:#f9cb7e;line-height:1.25;max-width:105ch;}
+  .manual {display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:.6em; font-size:clamp(12px,1.35vmin,28px); padding-top:.2em; }
+  select {font:inherit; font-weight:700; background:#1b2936; color:white; border:2px solid #6d8597; border-radius:6px; padding:.25em .3em; max-width:100%; }
+  #manualResult {color:#ffdc76; font-weight:800;}
+  .footer {position:fixed;left:50%;bottom:1.4%;transform:translateX(-50%);font-size:clamp(10px,1.1vmin,24px);color:#fff;z-index:4;white-space:nowrap;background:#080d12;padding:2px 8px;}
+  @media (orientation:portrait) { .layout {padding:10vh 5vw 9vh;} .panel {width:94%;max-height:87%;padding:2vmin;} .metrics {grid-template-columns:1fr;} .metric.full {grid-column:auto;} .hero {font-size:clamp(26px,5.4vw,110px);} .top-arrow {top:5%;} }
+  @media (max-height:560px) { .panel {gap:5px;padding:10px;} .metric {padding:7px;} .top-arrow .arrow{font-size:27px;} .top-arrow{font-size:12px;} .hint{font-size:11px;} }
+</style>
 </head>
 <body>
-  <div class="corner tl">SUP. IZQ.</div><div class="corner tr">SUP. DER.</div>
-  <div class="corner bl">INF. IZQ.</div><div class="corner br">INF. DER.</div>
-  <div class="arrow">&#8593; ARRIBA DEL HTML</div>
-  <main class="panel">
-    <div class="label">Resolucion del area HTML</div>
-    <div class="main" id="viewport">Detectando...</div>
-    <div class="grid">
-      <div class="cell"><div class="label">Orientacion del HTML</div><div class="value" id="viewportOrientation">-</div></div>
-      <div class="cell"><div class="label">Screen reportado</div><div class="value" id="screenDimensions">-</div></div>
-      <div class="cell"><div class="label">API Screen Orientation</div><div class="value" id="screenOrientation">-</div></div>
-      <div class="cell"><div class="label">Rotacion CSS html / body</div><div class="value" id="cssRotation">-</div></div>
-      <div class="cell"><div class="label">Pixel ratio</div><div class="value" id="pixelRatio">-</div></div>
-      <div class="cell"><div class="label">Visual viewport</div><div class="value" id="visualViewport">-</div></div>
-    </div>
-    <div class="message" id="interpretation">Comprobando...</div>
-  </main>
-  <script>
-    function orientation(w, h) { return w > h ? 'HORIZONTAL' : h > w ? 'VERTICAL' : 'CUADRADA'; }
-    function cssTransformInfo(element) {
-      const transform = getComputedStyle(element).transform;
-      if (!transform || transform === 'none') return 'sin transformacion';
-      // La matriz CSS informa sobre la transformacion del elemento, no sobre giros externos del reproductor.
-      try {
-        const matrix = new DOMMatrixReadOnly(transform);
-        const deg = Math.round(Math.atan2(matrix.b, matrix.a) * 180 / Math.PI);
-        return deg + '\u00b0 (CSS)';
-      } catch (e) { return transform; }
-    }
-    function show() {
-      const w = window.innerWidth, h = window.innerHeight;
-      const sw = window.screen.width, sh = window.screen.height;
-      const screenOrientation = window.screen.orientation;
-      const hasOrientationAPI = Boolean(screenOrientation && typeof screenOrientation.angle === 'number');
-      document.getElementById('viewport').textContent = w + ' \u00d7 ' + h;
-      document.getElementById('viewportOrientation').textContent = orientation(w, h);
-      document.getElementById('screenDimensions').textContent = sw + ' \u00d7 ' + sh + ' (' + orientation(sw, sh) + ')';
-      document.getElementById('screenOrientation').textContent = hasOrientationAPI
-        ? screenOrientation.type + ' / ' + screenOrientation.angle + '\u00b0'
-        : 'No disponible';
-      const htmlCss = cssTransformInfo(document.documentElement);
-      const bodyCss = cssTransformInfo(document.body);
-      document.getElementById('cssRotation').textContent = 'html: ' + htmlCss + ' | body: ' + bodyCss;
-      document.getElementById('pixelRatio').textContent = String(window.devicePixelRatio || 1);
-      const vv = window.visualViewport;
-      document.getElementById('visualViewport').textContent = vv
-        ? Math.round(vv.width) + ' \u00d7 ' + Math.round(vv.height) + ' / zoom ' + vv.scale
-        : 'No disponible';
-      const discrepancy = orientation(w, h) !== orientation(sw, sh);
-      const cssFound = htmlCss !== 'sin transformacion' || bodyCss !== 'sin transformacion';
-      let message = discrepancy
-        ? 'AVISO: el area HTML y screen reportan orientaciones distintas. Revisar configuracion del reproductor.'
-        : 'El area HTML y screen reportan la misma orientacion.';
-      if (cssFound) message += ' Hay una transformacion CSS detectable en html o body.';
-      message += ' Si la flecha roja NO apunta hacia arriba fisicamente, existe rotacion posterior al renderizado o transformacion no detectada aqui.';
-      document.getElementById('interpretation').textContent = message;
-    }
-    window.addEventListener('load', show);
-    window.addEventListener('resize', show);
-    if (window.visualViewport) window.visualViewport.addEventListener('resize', show);
-    if (window.screen.orientation && window.screen.orientation.addEventListener) window.screen.orientation.addEventListener('change', show);
-    setInterval(show, 2000);
-  </script>
+<div id="grid" aria-hidden="true"></div><div id="axes" aria-hidden="true"></div>
+<div class="edge tl">1 - SUP. IZQ. (ROJO)</div>
+<div class="edge tr">2 - SUP. DER. (AZUL)</div>
+<div class="edge bl">3 - INF. IZQ. (AMARILLO)</div>
+<div class="edge br">4 - INF. DER. (MORADO)</div>
+<div class="top-arrow"><div class="arrow">&#8593;</div>ARRIBA DEL HTML</div>
+<main class="layout"><section class="panel">
+<div class="eyebrow">DIAGNOSTICO DE RESOLUCION DOOH</div>
+<div class="hero" id="resolution">-- x --</div>
+<div class="hero-sub" id="viewportOrientation">ORIENTACION HTML: --</div>
+<div class="metrics">
+  <div class="metric"><div class="name">SCREEN (REPORTADO)</div><div class="value" id="screenResolution">--</div></div>
+  <div class="metric"><div class="name">ORIENTACION SCREEN / ANGULO</div><div class="value" id="screenOrientation">--</div></div>
+  <div class="metric"><div class="name">PIXEL RATIO / CSS ZOOM</div><div class="value" id="pixelRatio">--</div></div>
+  <div class="metric"><div class="name">ROTACION CSS HTML / BODY</div><div class="value small" id="cssRotation">--</div></div>
+  <div class="metric full"><div class="name">VIEWPORT / ZOOM / AREA VISIBLE</div><div class="value small" id="viewportInfo">--</div></div>
+</div>
+<div class="hint" id="warning">Nota: un giro aplicado por el reproductor o controlador LED fuera del navegador NO puede medirse desde JavaScript.</div>
+<div class="manual"><label for="physicalTop">¿DONDE VES LA FLECHA ROJA RESPECTO A LA PANTALLA FISICA?</label>
+<select id="physicalTop"><option value="">Seleccionar (opcional)</option><option value="top">Arriba</option><option value="right">Derecha</option><option value="bottom">Abajo</option><option value="left">Izquierda</option></select>
+<span id="manualResult">Giro fisico: sin confirmar</span></div>
+</section></main>
+<div class="footer">FOTO DE PANTALLA COMPLETA: incluir flecha roja y 4 esquinas | Actualizacion automatica</div>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (v) { return typeof v === 'number' && isFinite(v) ? (Math.round(v * 100) / 100).toString() : 'N/D'; };
+  var wh = function (w,h) {return fmt(w) + ' x ' + fmt(h);};
+  var shape = function (w,h) {return w > h ? 'HORIZONTAL' : w < h ? 'VERTICAL' : 'CUADRADA';};
+  function orientationInfo() {
+    var ori = screen.orientation;
+    if (ori && typeof ori.type === 'string') return ori.type + ' / ' + (typeof ori.angle === 'number' ? ori.angle + '\u00b0' : 'angulo N/D');
+    if (typeof window.orientation === 'number') return 'API antigua: ' + window.orientation + '\u00b0';
+    return 'API no disponible';
+  }
+  function cssInfo(el) {
+    if (!el || !window.getComputedStyle) return 'N/D';
+    var s = getComputedStyle(el), t = s.transform || s.webkitTransform || 'none';
+    return t === 'none' ? 'sin transformacion' : t;
+  }
+  function update() {
+    var w = window.innerWidth, h = window.innerHeight;
+    var sw = screen.width, sh = screen.height;
+    var vv = window.visualViewport;
+    var zoom = getComputedStyle(document.documentElement).zoom || 'normal';
+    $('resolution').textContent = wh(w,h);
+    $('viewportOrientation').textContent = 'ORIENTACION HTML: ' + shape(w,h);
+    $('screenResolution').textContent = wh(sw,sh) + ' (' + shape(sw,sh) + ')';
+    $('screenOrientation').textContent = orientationInfo();
+    $('pixelRatio').textContent = fmt(window.devicePixelRatio) + ' / ' + zoom;
+    $('cssRotation').textContent = 'HTML: ' + cssInfo(document.documentElement) + ' | BODY: ' + cssInfo(document.body);
+    $('viewportInfo').textContent = 'inner ' + wh(w,h) + ' | outer ' + wh(window.outerWidth,window.outerHeight) + ' | visual ' + (vv ? wh(vv.width,vv.height) + ' / escala ' + fmt(vv.scale) : 'N/D') + ' | screen.avail ' + wh(screen.availWidth,screen.availHeight);
+    $('warning').textContent = 'INTERPRETACION: ' + (shape(w,h) !== shape(sw) ? 'La orientacion del HTML y screen no coincide. ' : 'HTML y screen reportan la misma orientacion. ') + 'Esto NO confirma la orientacion fisica ni detecta giros externos del reproductor/controlador LED.';
+  }
+  function checkVisual() {
+    var position = $('physicalTop').value;
+    var descriptions = {top:'0\u00b0 aparente: flecha arriba',right:'90\u00b0 horario aparente: flecha a la derecha',bottom:'180\u00b0 aparente: flecha abajo',left:'90\u00b0 antihorario aparente: flecha a la izquierda'};
+    $('manualResult').textContent = position ? descriptions[position] + ' (verificado visualmente)' : 'Giro fisico: sin confirmar';
+  }
+  window.addEventListener('load',update);
+  window.addEventListener('resize',update);
+  window.addEventListener('orientationchange',update);
+  if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener('change',update);
+  if (window.visualViewport) { visualViewport.addEventListener('resize',update);visualViewport.addEventListener('scroll',update); }
+  $('physicalTop').addEventListener('change',checkVisual);
+  update();
+  setInterval(update,2000);
+})();
+</script>
 </body>
 </html>

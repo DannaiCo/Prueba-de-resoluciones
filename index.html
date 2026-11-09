@@ -3,109 +3,95 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Diagnostico DOOH | Resolucion y orientacion</title>
+<title>DOOH - Prueba de cobertura y orientacion</title>
 <style>
-  :root { color-scheme: dark; --green: #38ffb5; --white:#f6f7fb; --muted:#bcc5ce; --orange:#ffb44b; }
-  * { box-sizing:border-box; }
-  html, body { width:100%; height:100%; margin:0; overflow:hidden; background:#080d12; color:var(--white); font-family:Arial,Helvetica,sans-serif; }
-  #grid { position:fixed; inset:0; pointer-events:none; background-image: linear-gradient(to right,rgba(255,255,255,.09) 1px,transparent 1px), linear-gradient(to bottom,rgba(255,255,255,.09) 1px,transparent 1px); background-size:10% 10%; }
-  #axes { position:fixed; inset:0; pointer-events:none; }
-  #axes::before,#axes::after { content:""; position:absolute; background:rgba(255,255,255,.28); }
-  #axes::before { left:50%; top:0; height:100%; width:2px; }
-  #axes::after { top:50%; left:0; width:100%; height:2px; }
-  .edge { position:fixed; z-index:4; padding:.34em .55em; font-size:clamp(12px,1.55vmin,32px); font-weight:900; letter-spacing:.03em; border:2px solid currentColor; background:#050709; }
-  .tl {top:1.5%;left:1%;color:#ff5568} .tr {top:1.5%;right:1%;color:#49b8ff} .bl {bottom:1.5%;left:1%;color:#ffe257} .br {bottom:1.5%;right:1%;color:#b78aff}
-  .top-arrow {position:fixed; top:1%; left:50%; transform:translateX(-50%); z-index:3; color:#ff5568; text-align:center; font-size:clamp(12px,1.6vmin,34px); font-weight:900; white-space:nowrap; text-shadow:0 2px 5px black; }
-  .top-arrow .arrow {font-size:clamp(28px,5.3vmin,100px);line-height:1;}
-  .layout {position:relative; z-index:2; height:100%; width:100%; display:flex; align-items:center; justify-content:center; padding: min(10vh,120px) 7vw min(9vh,110px); }
-  .panel {width:min(91%,1700px); max-height:88%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:clamp(7px,1.1vmin,25px); padding:clamp(12px,2vmin,38px); border:3px solid rgba(255,255,255,.4); border-radius:12px; background:rgba(2,7,11,.9); overflow:hidden; }
-  .eyebrow {font-size:clamp(13px,1.5vmin,33px); font-weight:800; color:var(--white);letter-spacing:.13em;}
-  .hero {color:var(--green);font-size:clamp(28px,5.8vmin,155px); line-height:1; font-weight:900; font-variant-numeric:tabular-nums; white-space:nowrap; }
-  .hero-sub {color:var(--orange);font-size:clamp(13px,1.75vmin,36px);font-weight:800;}
-  .metrics {width:100%; display:grid; grid-template-columns:1fr 1fr; gap:clamp(8px,1.2vmin,25px); text-align:left; }
-  .metric {border:1px solid #59636d; background:#111921; border-radius:8px; padding:clamp(9px,1.4vmin,28px); min-width:0;}
-  .metric.full {grid-column:1/-1;}
-  .metric .name {font-size:clamp(12px,1.4vmin,31px);color:#c5d0db; font-weight:800; margin-bottom:.25em; letter-spacing:.025em;}
-  .metric .value {font-size:clamp(13px,2vmin,46px);font-weight:800;color:var(--green);overflow-wrap:anywhere;line-height:1.18;}
-  .metric .value.small {font-size:clamp(12px,1.4vmin,31px);}
-  .hint {font-size:clamp(11px,1.2vmin,25px);color:#f9cb7e;line-height:1.25;max-width:105ch;}
-  .manual {display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:.6em; font-size:clamp(12px,1.35vmin,28px); padding-top:.2em; }
-  select {font:inherit; font-weight:700; background:#1b2936; color:white; border:2px solid #6d8597; border-radius:6px; padding:.25em .3em; max-width:100%; }
-  #manualResult {color:#ffdc76; font-weight:800;}
-  .footer {position:fixed;left:50%;bottom:1.4%;transform:translateX(-50%);font-size:clamp(10px,1.1vmin,24px);color:#fff;z-index:4;white-space:nowrap;background:#080d12;padding:2px 8px;}
-  @media (orientation:portrait) { .layout {padding:10vh 5vw 9vh;} .panel {width:94%;max-height:87%;padding:2vmin;} .metrics {grid-template-columns:1fr;} .metric.full {grid-column:auto;} .hero {font-size:clamp(26px,5.4vw,110px);} .top-arrow {top:5%;} }
-  @media (max-height:560px) { .panel {gap:5px;padding:10px;} .metric {padding:7px;} .top-arrow .arrow{font-size:27px;} .top-arrow{font-size:12px;} .hint{font-size:11px;} }
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080a0e;color:#fff;font-family:Arial,Helvetica,sans-serif}
+/* Todos los patrones ocupan el viewport completo; no hay resolucion fija ni escalado global. */
+#test-pattern{position:fixed;inset:0;width:100%;height:100%;overflow:hidden;z-index:0;
+ background:linear-gradient(90deg,rgba(235,50,69,.26) 0 50%,rgba(45,149,255,.26) 50% 100%) top/100% 50% no-repeat,
+ linear-gradient(90deg,rgba(255,206,34,.26) 0 50%,rgba(172,86,255,.26) 50% 100%) bottom/100% 50% no-repeat,#080a0e}
+#grid{position:fixed;inset:0;pointer-events:none;z-index:1;background-image:linear-gradient(to right,rgba(255,255,255,.22) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.22) 1px,transparent 1px);background-size:10% 10%}
+#axes{position:fixed;inset:0;pointer-events:none;z-index:1}
+#axes:before,#axes:after{content:"";position:absolute;background:#fff;box-shadow:0 0 5px #000}
+#axes:before{left:calc(50% - 1px);top:0;width:2px;height:100%}
+#axes:after{top:calc(50% - 1px);left:0;width:100%;height:2px}
+.frame{position:fixed;inset:0;border:clamp(5px,0.45vmin,18px) solid #fff;z-index:2;pointer-events:none}
+.edge{position:fixed;z-index:4;width:18%;height:clamp(8px,1.1vmin,34px)}
+.top{top:0}.bottom{bottom:0}.left{left:0}.right{right:0}
+.edge.top.left,.edge.bottom.left{background:#ff4057}.edge.top.right,.edge.bottom.right{background:#249bff}
+.corner{position:fixed;z-index:5;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.15em;
+ width:clamp(80px,17vmin,260px);min-height:clamp(50px,9vmin,135px);border:clamp(2px,.35vmin,8px) solid white;
+ font-size:clamp(12px,1.9vmin,33px);font-weight:900;text-align:center;line-height:1.05;color:#080a0e;box-shadow:0 0 0 3px rgba(0,0,0,.55)}
+.corner b{font-size:1.55em}.tl{top:1.4%;left:1.1%;background:#ff4057}.tr{top:1.4%;right:1.1%;background:#249bff}.bl{bottom:1.4%;left:1.1%;background:#ffd21e}.br{bottom:1.4%;right:1.1%;background:#ab62ff}
+.arrow-box{position:fixed;z-index:5;top:1.3%;left:50%;transform:translateX(-50%);text-align:center;color:#fff;
+ font-weight:900;font-size:clamp(13px,1.8vmin,36px);text-shadow:0 2px 6px #000;white-space:nowrap}
+.arrow-box .arrow{font-size:clamp(42px,6.5vmin,125px);color:#ff3c53;line-height:.8}
+.side-mark{position:fixed;top:50%;z-index:3;transform:translateY(-50%);font-size:clamp(10px,1.6vmin,28px);font-weight:900;letter-spacing:.06em;background:#07090dcc;padding:.5em}
+.side-mark.l{left:1%}.side-mark.r{right:1%}
+.bottom-mark{position:fixed;bottom:1.2%;left:50%;transform:translateX(-50%);z-index:5;font-size:clamp(11px,1.4vmin,26px);font-weight:900;background:#080a0e;padding:.25em .65em;white-space:nowrap}
+.main{position:fixed;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:clamp(58px,12vmin,210px) clamp(75px,19vmin,300px)}
+.panel{pointer-events:auto;width:min(100%,1380px);max-height:100%;overflow:auto;background:rgba(5,9,15,.94);border:2px solid white;
+ padding:clamp(10px,2vmin,32px);text-align:center;box-shadow:0 0 16px #000b}
+h1{font-size:clamp(14px,2.2vmin,40px);margin:0 0 .3em;letter-spacing:.04em}
+.res{font-size:clamp(24px,5.7vmin,120px);font-weight:900;color:#41ffbe;line-height:1.05;white-space:nowrap}
+.orient{font-size:clamp(12px,1.7vmin,34px);font-weight:800;color:#ffdb6e;margin:.3em 0 .7em}
+.data{display:grid;grid-template-columns:1fr 1fr;gap:clamp(5px,.8vmin,15px);text-align:left}
+.item{background:#14202d;border:1px solid #5c7388;padding:clamp(7px,1vmin,19px);min-width:0}
+.item.full{grid-column:1 / -1}.label{color:#d7e4ec;font-weight:800;font-size:clamp(11px,1.4vmin,25px);line-height:1.1}
+.value{color:#41ffbe;font-weight:800;font-size:clamp(12px,1.75vmin,34px);overflow-wrap:anywhere;margin-top:.22em;line-height:1.17}
+.value.sm{font-size:clamp(11px,1.35vmin,27px)}
+.note{color:#ffcb8b;font-size:clamp(11px,1.3vmin,25px);line-height:1.25;margin-top:.8em}
+@media (orientation:portrait){.main{padding:clamp(85px,12vh,290px) 13vw clamp(75px,11vh,260px)}.data{grid-template-columns:1fr}.item.full{grid-column:auto}.res{font-size:clamp(24px,5vw,100px)}.panel{padding:2vmin}.corner{width:18vw;min-height:8vh}.arrow-box{top:2%}}
+@media (max-height:650px){.main{padding:60px 15vw}.panel{padding:8px}.item{padding:5px}.orient{margin:2px 0 5px}.note{margin-top:4px}.arrow-box .arrow{font-size:35px}}
 </style>
 </head>
 <body>
-<div id="grid" aria-hidden="true"></div><div id="axes" aria-hidden="true"></div>
-<div class="edge tl">1 - SUP. IZQ. (ROJO)</div>
-<div class="edge tr">2 - SUP. DER. (AZUL)</div>
-<div class="edge bl">3 - INF. IZQ. (AMARILLO)</div>
-<div class="edge br">4 - INF. DER. (MORADO)</div>
-<div class="top-arrow"><div class="arrow">&#8593;</div>ARRIBA DEL HTML</div>
-<main class="layout"><section class="panel">
-<div class="eyebrow">DIAGNOSTICO DE RESOLUCION DOOH</div>
-<div class="hero" id="resolution">-- x --</div>
-<div class="hero-sub" id="viewportOrientation">ORIENTACION HTML: --</div>
-<div class="metrics">
-  <div class="metric"><div class="name">SCREEN (REPORTADO)</div><div class="value" id="screenResolution">--</div></div>
-  <div class="metric"><div class="name">ORIENTACION SCREEN / ANGULO</div><div class="value" id="screenOrientation">--</div></div>
-  <div class="metric"><div class="name">PIXEL RATIO / CSS ZOOM</div><div class="value" id="pixelRatio">--</div></div>
-  <div class="metric"><div class="name">ROTACION CSS HTML / BODY</div><div class="value small" id="cssRotation">--</div></div>
-  <div class="metric full"><div class="name">VIEWPORT / ZOOM / AREA VISIBLE</div><div class="value small" id="viewportInfo">--</div></div>
+<div id="test-pattern" aria-hidden="true"></div><div id="grid" aria-hidden="true"></div><div id="axes" aria-hidden="true"></div><div class="frame" aria-hidden="true"></div>
+<div class="edge top left"></div><div class="edge top right"></div>
+<div class="corner tl"><b>1</b>SUPERIOR<br>IZQUIERDA</div>
+<div class="corner tr"><b>2</b>SUPERIOR<br>DERECHA</div>
+<div class="corner bl"><b>3</b>INFERIOR<br>IZQUIERDA</div>
+<div class="corner br"><b>4</b>INFERIOR<br>DERECHA</div>
+<div class="arrow-box"><div class="arrow">&#8593;</div>ARRIBA DEL HTML</div>
+<div class="side-mark l">BORDE IZQUIERDO</div><div class="side-mark r">BORDE DERECHO</div>
+<div class="bottom-mark">ABAJO DEL HTML</div>
+<main class="main"><section class="panel">
+<h1>DOOH - PRUEBA DE COBERTURA Y ORIENTACION</h1>
+<div class="res" id="resolution">-- x --</div>
+<div class="orient" id="orientation">ORIENTACION HTML: --</div>
+<div class="data">
+<div class="item"><div class="label">SCREEN REPORTADO</div><div class="value" id="screen">--</div></div>
+<div class="item"><div class="label">SCREEN.ORIENTATION / ANGULO</div><div class="value sm" id="angle">--</div></div>
+<div class="item"><div class="label">DEVICE PIXEL RATIO</div><div class="value" id="dpr">--</div></div>
+<div class="item"><div class="label">ROTACION CSS EN HTML / BODY</div><div class="value sm" id="css">--</div></div>
+<div class="item full"><div class="label">VIEWPORT Y ZOOM (CSS PX)</div><div class="value sm" id="view">--</div></div>
 </div>
-<div class="hint" id="warning">Nota: un giro aplicado por el reproductor o controlador LED fuera del navegador NO puede medirse desde JavaScript.</div>
-<div class="manual"><label for="physicalTop">¿DONDE VES LA FLECHA ROJA RESPECTO A LA PANTALLA FISICA?</label>
-<select id="physicalTop"><option value="">Seleccionar (opcional)</option><option value="top">Arriba</option><option value="right">Derecha</option><option value="bottom">Abajo</option><option value="left">Izquierda</option></select>
-<span id="manualResult">Giro fisico: sin confirmar</span></div>
+<div class="note">COMPROBACION VISUAL: el marco blanco debe llegar a los cuatro bordes fisicos. Los cuadros 1, 2, 3 y 4 deben estar en sus esquinas respectivas. Si no se ven todos, puede existir recorte o ajuste de imagen. Un giro externo al navegador NO se detecta directamente con JavaScript.</div>
 </section></main>
-<div class="footer">FOTO DE PANTALLA COMPLETA: incluir flecha roja y 4 esquinas | Actualizacion automatica</div>
 <script>
-(function () {
-  'use strict';
-  var $ = function (id) { return document.getElementById(id); };
-  var fmt = function (v) { return typeof v === 'number' && isFinite(v) ? (Math.round(v * 100) / 100).toString() : 'N/D'; };
-  var wh = function (w,h) {return fmt(w) + ' x ' + fmt(h);};
-  var shape = function (w,h) {return w > h ? 'HORIZONTAL' : w < h ? 'VERTICAL' : 'CUADRADA';};
-  function orientationInfo() {
-    var ori = screen.orientation;
-    if (ori && typeof ori.type === 'string') return ori.type + ' / ' + (typeof ori.angle === 'number' ? ori.angle + '\u00b0' : 'angulo N/D');
-    if (typeof window.orientation === 'number') return 'API antigua: ' + window.orientation + '\u00b0';
-    return 'API no disponible';
-  }
-  function cssInfo(el) {
-    if (!el || !window.getComputedStyle) return 'N/D';
-    var s = getComputedStyle(el), t = s.transform || s.webkitTransform || 'none';
-    return t === 'none' ? 'sin transformacion' : t;
-  }
-  function update() {
-    var w = window.innerWidth, h = window.innerHeight;
-    var sw = screen.width, sh = screen.height;
-    var vv = window.visualViewport;
-    var zoom = getComputedStyle(document.documentElement).zoom || 'normal';
-    $('resolution').textContent = wh(w,h);
-    $('viewportOrientation').textContent = 'ORIENTACION HTML: ' + shape(w,h);
-    $('screenResolution').textContent = wh(sw,sh) + ' (' + shape(sw,sh) + ')';
-    $('screenOrientation').textContent = orientationInfo();
-    $('pixelRatio').textContent = fmt(window.devicePixelRatio) + ' / ' + zoom;
-    $('cssRotation').textContent = 'HTML: ' + cssInfo(document.documentElement) + ' | BODY: ' + cssInfo(document.body);
-    $('viewportInfo').textContent = 'inner ' + wh(w,h) + ' | outer ' + wh(window.outerWidth,window.outerHeight) + ' | visual ' + (vv ? wh(vv.width,vv.height) + ' / escala ' + fmt(vv.scale) : 'N/D') + ' | screen.avail ' + wh(screen.availWidth,screen.availHeight);
-    $('warning').textContent = 'INTERPRETACION: ' + (shape(w,h) !== shape(sw) ? 'La orientacion del HTML y screen no coincide. ' : 'HTML y screen reportan la misma orientacion. ') + 'Esto NO confirma la orientacion fisica ni detecta giros externos del reproductor/controlador LED.';
-  }
-  function checkVisual() {
-    var position = $('physicalTop').value;
-    var descriptions = {top:'0\u00b0 aparente: flecha arriba',right:'90\u00b0 horario aparente: flecha a la derecha',bottom:'180\u00b0 aparente: flecha abajo',left:'90\u00b0 antihorario aparente: flecha a la izquierda'};
-    $('manualResult').textContent = position ? descriptions[position] + ' (verificado visualmente)' : 'Giro fisico: sin confirmar';
-  }
-  window.addEventListener('load',update);
-  window.addEventListener('resize',update);
-  window.addEventListener('orientationchange',update);
-  if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener('change',update);
-  if (window.visualViewport) { visualViewport.addEventListener('resize',update);visualViewport.addEventListener('scroll',update); }
-  $('physicalTop').addEventListener('change',checkVisual);
-  update();
-  setInterval(update,2000);
+(function(){
+ 'use strict';
+ function el(id){return document.getElementById(id)}
+ function n(v){return typeof v==='number'&&isFinite(v)?String(Math.round(v*100)/100):'N/D'}
+ function dims(w,h){return n(w)+' x '+n(h)}
+ function orient(w,h){return w>h?'HORIZONTAL':w<h?'VERTICAL':'CUADRADA'}
+ function cssTransform(node){try{var cs=getComputedStyle(node);return cs.transform&&cs.transform!=='none'?cs.transform:'Ninguna'}catch(e){return 'N/D'}}
+ function update(){
+   var w=window.innerWidth,h=window.innerHeight,sw=screen.width,sh=screen.height;
+   var o=screen.orientation,vo=window.visualViewport;
+   el('resolution').textContent=dims(w,h);
+   el('orientation').textContent='ORIENTACION HTML: '+orient(w,h);
+   el('screen').textContent=dims(sw,sh)+' ('+orient(sw,sh)+')';
+   el('angle').textContent=o&&o.type?o.type+' / '+(typeof o.angle==='number'?o.angle+' grados':'N/D'):(typeof window.orientation==='number'?'API antigua: '+window.orientation+' grados':'No disponible');
+   el('dpr').textContent=n(window.devicePixelRatio);
+   el('css').textContent='HTML: '+cssTransform(document.documentElement)+' | BODY: '+cssTransform(document.body);
+   el('view').textContent='inner: '+dims(w,h)+' | visual: '+(vo?dims(vo.width,vo.height)+' / escala '+n(vo.scale):'N/D')+' | outer: '+dims(window.outerWidth,window.outerHeight);
+ }
+ window.addEventListener('resize',update);window.addEventListener('orientationchange',update);
+ if(screen.orientation&&screen.orientation.addEventListener)screen.orientation.addEventListener('change',update);
+ if(window.visualViewport)window.visualViewport.addEventListener('resize',update);
+ update();setInterval(update,3000);
 })();
 </script>
 </body>

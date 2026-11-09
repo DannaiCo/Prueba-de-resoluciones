@@ -2,98 +2,110 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>DOOH - Prueba automatica 1793 x 2051</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diagnostico DOOH | Resolucion y orientacion</title>
 <style>
-  * {box-sizing:border-box}
-  html,body {width:100%;height:100%;margin:0;overflow:hidden;background:#090d18;font-family:Arial,Helvetica,sans-serif;color:#fff}
-  #stage {position:absolute;left:0;top:0;width:1793px;height:2051px;overflow:hidden;transform-origin:0 0;background:#111b2c}
-  .quad {position:absolute;width:50%;height:50%;opacity:.94}
-  .tl {left:0;top:0;background:#c5193b} .tr {right:0;top:0;background:#1455df}
-  .bl {left:0;bottom:0;background:#ed9a12} .br {right:0;bottom:0;background:#8038b8}
-  .frame {position:absolute;inset:0;border:16px solid #fff;pointer-events:none}
-  .mid-v,.mid-h {position:absolute;background:#fff8;pointer-events:none}
-  .mid-v {left:50%;top:0;width:4px;height:100%} .mid-h {top:50%;left:0;height:4px;width:100%}
-  .top {position:absolute;top:45px;left:0;width:100%;font-size:55px;line-height:1.15;text-align:center;font-weight:900;text-shadow:0 3px 8px #000}
-  .arrow {font-size:90px;line-height:1}
-  .corner {position:absolute;font-size:33px;font-weight:bold;padding:24px;text-shadow:0 3px 5px #000}
-  .corner.tl-label {top:0;left:0}.corner.tr-label {top:0;right:0}
-  .corner.bl-label {bottom:0;left:0}.corner.br-label {bottom:0;right:0}
-  .diagnostic {position:absolute;top:300px;left:7%;width:86%;text-align:center;background:#07111de8;border:7px solid #fff;border-radius:18px;padding:32px 22px;font-weight:bold}
-  .diagnostic h1 {font-size:56px;line-height:1.05;margin:0 0 19px}
-  .measure {font-size:82px;color:#4cffd3;line-height:1.08}
-  .line {font-size:36px;margin-top:15px}
-  .note {font-size:31px;color:#ffed8a;margin-top:18px}
-  .figures {position:absolute;top:1100px;left:0;width:100%;display:flex;align-items:center;justify-content:center;gap:110px;flex-direction:row}
-  .circle {width:350px;height:350px;border:15px solid white;border-radius:50%;background:#131b2aab;display:flex;align-items:center;justify-content:center;font-size:31px;text-align:center;font-weight:bold}
-  .square {width:350px;height:350px;border:15px solid white;background:#131b2aab;display:flex;align-items:center;justify-content:center;font-size:31px;text-align:center;font-weight:bold}
-  .footer {position:absolute;bottom:150px;left:6%;width:88%;text-align:center;font-size:37px;line-height:1.2;font-weight:bold;background:#091320c9;padding:22px}
-  .cycle {position:absolute;bottom:20px;left:10%;width:80%;text-align:center;background:#070f1ce6;border:3px solid white;padding:12px;font-size:30px;font-weight:900}
-  .cycle small {font-size:24px;display:block;color:#ffed8a;margin-top:5px}
+  :root { color-scheme: dark; --green: #38ffb5; --white:#f6f7fb; --muted:#bcc5ce; --orange:#ffb44b; }
+  * { box-sizing:border-box; }
+  html, body { width:100%; height:100%; margin:0; overflow:hidden; background:#080d12; color:var(--white); font-family:Arial,Helvetica,sans-serif; }
+  #grid { position:fixed; inset:0; pointer-events:none; background-image: linear-gradient(to right,rgba(255,255,255,.09) 1px,transparent 1px), linear-gradient(to bottom,rgba(255,255,255,.09) 1px,transparent 1px); background-size:10% 10%; }
+  #axes { position:fixed; inset:0; pointer-events:none; }
+  #axes::before,#axes::after { content:""; position:absolute; background:rgba(255,255,255,.28); }
+  #axes::before { left:50%; top:0; height:100%; width:2px; }
+  #axes::after { top:50%; left:0; width:100%; height:2px; }
+  .edge { position:fixed; z-index:4; padding:.34em .55em; font-size:clamp(12px,1.55vmin,32px); font-weight:900; letter-spacing:.03em; border:2px solid currentColor; background:#050709; }
+  .tl {top:1.5%;left:1%;color:#ff5568} .tr {top:1.5%;right:1%;color:#49b8ff} .bl {bottom:1.5%;left:1%;color:#ffe257} .br {bottom:1.5%;right:1%;color:#b78aff}
+  .top-arrow {position:fixed; top:1%; left:50%; transform:translateX(-50%); z-index:3; color:#ff5568; text-align:center; font-size:clamp(12px,1.6vmin,34px); font-weight:900; white-space:nowrap; text-shadow:0 2px 5px black; }
+  .top-arrow .arrow {font-size:clamp(28px,5.3vmin,100px);line-height:1;}
+  .layout {position:relative; z-index:2; height:100%; width:100%; display:flex; align-items:center; justify-content:center; padding: min(10vh,120px) 7vw min(9vh,110px); }
+  .panel {width:min(91%,1700px); max-height:88%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:clamp(7px,1.1vmin,25px); padding:clamp(12px,2vmin,38px); border:3px solid rgba(255,255,255,.4); border-radius:12px; background:rgba(2,7,11,.9); overflow:hidden; }
+  .eyebrow {font-size:clamp(13px,1.5vmin,33px); font-weight:800; color:var(--white);letter-spacing:.13em;}
+  .hero {color:var(--green);font-size:clamp(28px,5.8vmin,155px); line-height:1; font-weight:900; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .hero-sub {color:var(--orange);font-size:clamp(13px,1.75vmin,36px);font-weight:800;}
+  .metrics {width:100%; display:grid; grid-template-columns:1fr 1fr; gap:clamp(8px,1.2vmin,25px); text-align:left; }
+  .metric {border:1px solid #59636d; background:#111921; border-radius:8px; padding:clamp(9px,1.4vmin,28px); min-width:0;}
+  .metric.full {grid-column:1/-1;}
+  .metric .name {font-size:clamp(12px,1.4vmin,31px);color:#c5d0db; font-weight:800; margin-bottom:.25em; letter-spacing:.025em;}
+  .metric .value {font-size:clamp(13px,2vmin,46px);font-weight:800;color:var(--green);overflow-wrap:anywhere;line-height:1.18;}
+  .metric .value.small {font-size:clamp(12px,1.4vmin,31px);}
+  .hint {font-size:clamp(11px,1.2vmin,25px);color:#f9cb7e;line-height:1.25;max-width:105ch;}
+  .manual {display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:.6em; font-size:clamp(12px,1.35vmin,28px); padding-top:.2em; }
+  select {font:inherit; font-weight:700; background:#1b2936; color:white; border:2px solid #6d8597; border-radius:6px; padding:.25em .3em; max-width:100%; }
+  #manualResult {color:#ffdc76; font-weight:800;}
+  .footer {position:fixed;left:50%;bottom:1.4%;transform:translateX(-50%);font-size:clamp(10px,1.1vmin,24px);color:#fff;z-index:4;white-space:nowrap;background:#080d12;padding:2px 8px;}
+  @media (orientation:portrait) { .layout {padding:10vh 5vw 9vh;} .panel {width:94%;max-height:87%;padding:2vmin;} .metrics {grid-template-columns:1fr;} .metric.full {grid-column:auto;} .hero {font-size:clamp(26px,5.4vw,110px);} .top-arrow {top:5%;} }
+  @media (max-height:560px) { .panel {gap:5px;padding:10px;} .metric {padding:7px;} .top-arrow .arrow{font-size:27px;} .top-arrow{font-size:12px;} .hint{font-size:11px;} }
 </style>
 </head>
 <body>
-<div id="stage">
-  <div class="quad tl"></div><div class="quad tr"></div><div class="quad bl"></div><div class="quad br"></div>
-  <div class="mid-v"></div><div class="mid-h"></div>
-  <div class="top"><div class="arrow">&#8593;</div>ARRIBA DEL HTML</div>
-  <div class="corner tl-label">SUP. IZQ.</div><div class="corner tr-label">SUP. DER.</div>
-  <div class="corner bl-label">INF. IZQ.</div><div class="corner br-label">INF. DER.</div>
-  <section class="diagnostic">
-    <h1>LIENZO DE CONTENIDO</h1>
-    <div class="measure">1793 x 2051</div>
-    <div class="line">Viewport del navegador: <span id="viewport">--</span></div>
-    <div class="line">Screen reportado: <span id="screen">--</span></div>
-    <div class="line">Escala X / Y: <span id="scales">--</span></div>
-    <div class="line">Modo: <span id="modeLabel">--</span></div>
-    <div class="note">Resolucion de diseno NO es resolucion fisica detectada</div>
-  </section>
-  <div class="figures"><div class="circle">CIRCULO<br>350 x 350</div><div class="square">CUADRADO<br>350 x 350</div></div>
-  <div class="footer">Si el circulo se ve ovalado o el cuadrado rectangular, existe deformacion en algun punto de la cadena de visualizacion.</div>
-  <div class="cycle">PRUEBA AUTOMATICA <span id="cycleStep">1 / 5</span><small>Siguiente modo en <span id="secondsRemaining">5</span> s</small></div>
-  <div class="frame"></div>
+<div id="grid" aria-hidden="true"></div><div id="axes" aria-hidden="true"></div>
+<div class="edge tl">1 - SUP. IZQ. (ROJO)</div>
+<div class="edge tr">2 - SUP. DER. (AZUL)</div>
+<div class="edge bl">3 - INF. IZQ. (AMARILLO)</div>
+<div class="edge br">4 - INF. DER. (MORADO)</div>
+<div class="top-arrow"><div class="arrow">&#8593;</div>ARRIBA DEL HTML</div>
+<main class="layout"><section class="panel">
+<div class="eyebrow">DIAGNOSTICO DE RESOLUCION DOOH</div>
+<div class="hero" id="resolution">-- x --</div>
+<div class="hero-sub" id="viewportOrientation">ORIENTACION HTML: --</div>
+<div class="metrics">
+  <div class="metric"><div class="name">SCREEN (REPORTADO)</div><div class="value" id="screenResolution">--</div></div>
+  <div class="metric"><div class="name">ORIENTACION SCREEN / ANGULO</div><div class="value" id="screenOrientation">--</div></div>
+  <div class="metric"><div class="name">PIXEL RATIO / CSS ZOOM</div><div class="value" id="pixelRatio">--</div></div>
+  <div class="metric"><div class="name">ROTACION CSS HTML / BODY</div><div class="value small" id="cssRotation">--</div></div>
+  <div class="metric full"><div class="name">VIEWPORT / ZOOM / AREA VISIBLE</div><div class="value small" id="viewportInfo">--</div></div>
 </div>
+<div class="hint" id="warning">Nota: un giro aplicado por el reproductor o controlador LED fuera del navegador NO puede medirse desde JavaScript.</div>
+<div class="manual"><label for="physicalTop">¿DONDE VES LA FLECHA ROJA RESPECTO A LA PANTALLA FISICA?</label>
+<select id="physicalTop"><option value="">Seleccionar (opcional)</option><option value="top">Arriba</option><option value="right">Derecha</option><option value="bottom">Abajo</option><option value="left">Izquierda</option></select>
+<span id="manualResult">Giro fisico: sin confirmar</span></div>
+</section></main>
+<div class="footer">FOTO DE PANTALLA COMPLETA: incluir flecha roja y 4 esquinas | Actualizacion automatica</div>
 <script>
-(function(){
+(function () {
   'use strict';
-  var W=1793, H=2051, stage=document.getElementById('stage');
-  var labels={stretch:'LLENAR (deforma si cambia proporcion)', contain:'PROPORCIONAL (conserva proporcion)',cover:'RECORTAR (conserva proporcion)',rotate90:'ROTACION +90 (proporcional)',rotate270:'ROTACION -90 (proporcional)'};
-  var modes=['stretch','contain','cover','rotate90','rotate270'];
-  var DURATION_SECONDS=5; // Cambiar aqui la duracion de cada modo
-  var start=Date.now(), mode='stretch', currentIndex=-1;
-  function render(){
-    var vw=window.innerWidth, vh=window.innerHeight;
-    var sx=vw/W,sy=vh/H, transform='';
-    if(mode==='stretch') transform='translate(0px,0px) scale('+sx+','+sy+')';
-    else if(mode==='contain'||mode==='cover'){
-      var s=(mode==='contain'?Math.min(sx,sy):Math.max(sx,sy));
-      transform='translate('+((vw-W*s)/2)+'px,'+((vh-H*s)/2)+'px) scale('+s+')';
-      sx=s;sy=s;
-    } else {
-      var s2=Math.min(vw/H,vh/W);
-      var tx=(vw-H*s2)/2,ty=(vh-W*s2)/2;
-      if(mode==='rotate90') transform='translate('+(tx+H*s2)+'px,'+ty+'px) rotate(90deg) scale('+s2+')';
-      else transform='translate('+tx+'px,'+(ty+W*s2)+'px) rotate(-90deg) scale('+s2+')';
-      sx=s2;sy=s2;
-    }
-    stage.style.transform=transform;
-    document.getElementById('viewport').textContent=vw+' x '+vh;
-    document.getElementById('screen').textContent=screen.width+' x '+screen.height;
-    document.getElementById('scales').textContent=sx.toFixed(3)+' / '+sy.toFixed(3);
-    document.getElementById('modeLabel').textContent=labels[mode];
-    document.getElementById('cycleStep').textContent=(currentIndex+1)+' / '+modes.length;
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (v) { return typeof v === 'number' && isFinite(v) ? (Math.round(v * 100) / 100).toString() : 'N/D'; };
+  var wh = function (w,h) {return fmt(w) + ' x ' + fmt(h);};
+  var shape = function (w,h) {return w > h ? 'HORIZONTAL' : w < h ? 'VERTICAL' : 'CUADRADA';};
+  function orientationInfo() {
+    var ori = screen.orientation;
+    if (ori && typeof ori.type === 'string') return ori.type + ' / ' + (typeof ori.angle === 'number' ? ori.angle + '\u00b0' : 'angulo N/D');
+    if (typeof window.orientation === 'number') return 'API antigua: ' + window.orientation + '\u00b0';
+    return 'API no disponible';
   }
-  function tick(){
-    var elapsed=Math.floor((Date.now()-start)/1000);
-    var index=Math.floor(elapsed/DURATION_SECONDS)%modes.length;
-    var remaining=DURATION_SECONDS-(elapsed%DURATION_SECONDS);
-    if(index!==currentIndex){currentIndex=index;mode=modes[index];render();}
-    document.getElementById('secondsRemaining').textContent=remaining;
+  function cssInfo(el) {
+    if (!el || !window.getComputedStyle) return 'N/D';
+    var s = getComputedStyle(el), t = s.transform || s.webkitTransform || 'none';
+    return t === 'none' ? 'sin transformacion' : t;
   }
-  window.addEventListener('resize',render);
-  window.addEventListener('orientationchange',render);
-  tick();
-  setInterval(tick,250);
+  function update() {
+    var w = window.innerWidth, h = window.innerHeight;
+    var sw = screen.width, sh = screen.height;
+    var vv = window.visualViewport;
+    var zoom = getComputedStyle(document.documentElement).zoom || 'normal';
+    $('resolution').textContent = wh(w,h);
+    $('viewportOrientation').textContent = 'ORIENTACION HTML: ' + shape(w,h);
+    $('screenResolution').textContent = wh(sw,sh) + ' (' + shape(sw,sh) + ')';
+    $('screenOrientation').textContent = orientationInfo();
+    $('pixelRatio').textContent = fmt(window.devicePixelRatio) + ' / ' + zoom;
+    $('cssRotation').textContent = 'HTML: ' + cssInfo(document.documentElement) + ' | BODY: ' + cssInfo(document.body);
+    $('viewportInfo').textContent = 'inner ' + wh(w,h) + ' | outer ' + wh(window.outerWidth,window.outerHeight) + ' | visual ' + (vv ? wh(vv.width,vv.height) + ' / escala ' + fmt(vv.scale) : 'N/D') + ' | screen.avail ' + wh(screen.availWidth,screen.availHeight);
+    $('warning').textContent = 'INTERPRETACION: ' + (shape(w,h) !== shape(sw) ? 'La orientacion del HTML y screen no coincide. ' : 'HTML y screen reportan la misma orientacion. ') + 'Esto NO confirma la orientacion fisica ni detecta giros externos del reproductor/controlador LED.';
+  }
+  function checkVisual() {
+    var position = $('physicalTop').value;
+    var descriptions = {top:'0\u00b0 aparente: flecha arriba',right:'90\u00b0 horario aparente: flecha a la derecha',bottom:'180\u00b0 aparente: flecha abajo',left:'90\u00b0 antihorario aparente: flecha a la izquierda'};
+    $('manualResult').textContent = position ? descriptions[position] + ' (verificado visualmente)' : 'Giro fisico: sin confirmar';
+  }
+  window.addEventListener('load',update);
+  window.addEventListener('resize',update);
+  window.addEventListener('orientationchange',update);
+  if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener('change',update);
+  if (window.visualViewport) { visualViewport.addEventListener('resize',update);visualViewport.addEventListener('scroll',update); }
+  $('physicalTop').addEventListener('change',checkVisual);
+  update();
+  setInterval(update,2000);
 })();
 </script>
 </body>
